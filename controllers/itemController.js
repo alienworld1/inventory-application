@@ -4,7 +4,16 @@ const Item = require('../models/items');
 const Category = require('../models/categories');
 
 exports.index = asyncHandler(async(req, res, next) => {
-  res.send('Not implemented: inventory home page');
+  const [numItems, numCategories] = await Promise.all([
+    Item.countDocuments({}).exec(),
+    Category.countDocuments({}).exec(),
+  ]);
+
+  res.render('index', {
+    title: 'Inventory Management',
+    numItems: numItems,
+    numCategories: numCategories,
+  });
 });
 
 exports.item_list = asyncHandler(async(req, res, next) => {

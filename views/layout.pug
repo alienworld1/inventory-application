@@ -4,4 +4,16 @@ html
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
-    block content
+    header Inventory Application
+    main
+      .sidebar 
+        section
+          a(href='/inventory') Home
+          a(href='/inventory/item') View all items
+          a(href='/inventory/category') View all Categories
+
+        section
+          a(href='/inventory/item/create') Create an item 
+          a(href='/inventory/category/create') Create a category
+      .main-body
+        block content

@@ -2,4 +2,10 @@ extends layout
 
 block content
   h1= title
-  p Welcome to #{title}
+  p Welcome to Inventory Application - a basic Express website developed with CRUD methods implemented for both items and categories. 
+
+  h2 Inventory 
+  p The store currently holds the following items
+  ul 
+    li #[strong Items:] !{numItems}
+    li #[strong Categories:]  !{numCategories}

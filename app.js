@@ -4,10 +4,16 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
+const mongoose = require('mongoose');
+const dotenv = require('dotenv').config();
+
 const indexRouter = require('./routes/index');
 const inventoryRouter = require('./routes/inventory');
 
 const app = express();
+
+const mongoDB = process.env.MONGODB_URL;
+mongoose.connect(mongoDB);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
