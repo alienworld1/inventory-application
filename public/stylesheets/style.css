@@ -36,9 +36,18 @@ a {
   color: #fafafa;
   text-decoration: none;
   padding: 8px;
+  border-radius: 5px;
 }
 
-a:hover {
+.main-body a {
+  color: var(--accent-color);
+}
+
+.main-body a:hover {
+  text-decoration: underline;
+}
+
+.sidebar a:hover {
   background-color: var(--accent-color);
   color: #bfdbfe;
 }
