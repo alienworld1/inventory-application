@@ -17,16 +17,27 @@ exports.index = asyncHandler(async(req, res, next) => {
 });
 
 exports.item_list = asyncHandler(async(req, res, next) => {
-  const items = await Item.find({}, 'name category').populate({path: 'category', select: 'name'}).exec();
+  const items = await Item.find({}, 'name category').populate({path: 'category', select: 'name'}).sort({name: 1}).exec();
 
   res.render('list', {
     title: 'List of Items',
     list: items,
-  })
+  });
 });
 
 exports.item_detail = asyncHandler(async(req, res, next) => {
-  res.send(`Not implemented: Item detail: ${req.params.id}`);
+  const item = await Item.findById(req.params.id).populate({path: 'category', select: 'name'}).exec();
+
+  if (item === null) {
+    const err = new Error('Item not found');
+    err.status = 404;
+    return next(err);
+  }
+
+  res.render('item_detail', {
+    title: 'Item Detail',
+    item: item,
+  });
 });
 
 exports.item_create_get = asyncHandler(async(req, res, next) => {
