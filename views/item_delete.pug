@@ -1,0 +1,15 @@
+extends layout 
+
+block content 
+  h1 #{title}: #{item.name}
+
+  form(method='post')
+    label(for="password") Enter the admin password to delete #{item.name}: 
+    input#password(type="password", name="password")
+    input#item_id(name='item_id' type='hidden' value=item._id)
+    button(type="submit") Delete
+
+  if errors
+    ul 
+      for error in errors 
+        li!= error.msg  

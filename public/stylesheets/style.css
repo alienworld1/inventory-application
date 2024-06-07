@@ -32,10 +32,13 @@ main {
   margin: 24px 0;
 }
 
+.sidebar a {
+  padding: 8px;
+}
+
 a {
   color: #fafafa;
   text-decoration: none;
-  padding: 8px;
   border-radius: 5px;
 }
 

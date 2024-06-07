@@ -1,5 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const { body, validationResult } = require('express-validator');
+const dotenv = require('dotenv').config();
 
 const Item = require('../models/items');
 const Category = require('../models/categories');
@@ -103,12 +104,36 @@ exports.item_create_post = [
 ];
 
 exports.item_delete_get = asyncHandler(async(req, res, next) => {
-  res.send('Not implemented: item delete GET');
+  const item = await Item.findById(req.params.id, 'name').exec();
+
+  if (item === null) {
+    res.redirect('/inventory/items');
+  }
+
+  res.render('item_delete', {title: 'Delete item', item: item});
 });
 
-exports.item_delete_post = asyncHandler(async(req, res, next) => {
-  res.send('Not implemented: item delete POST');
-});
+exports.item_delete_post = [
+  body('password', 'The admin password is incorrect.')
+    .equals(process.env.ADMIN_PASSWORD),
+  
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      const item = await Item.findById(req.params.id, 'name').exec();
+      res.render('item_delete', {
+        title: 'Delete item',
+        item: item,
+        errors: errors.array(),
+      });
+      return;
+    }
+
+    await Item.findByIdAndDelete(req.body.item_id).exec();
+    res.redirect('/inventory/item');
+  }),
+];
 
 exports.item_update_get = asyncHandler(async(req, res, next) => {
   res.send('Not implemented: item update GET');
