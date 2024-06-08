@@ -1,7 +1,9 @@
 const asyncHandler = require('express-async-handler');
+const dotenv = require('dotenv').config();
 const { body, validationResult } = require('express-validator');
 
 const Category = require('../models/categories');
+const Item = require('../models/items');
 
 exports.category_list = asyncHandler(async(req, res, next) => {
   const categories = await Category.find().sort({name: 1}).exec();
@@ -66,12 +68,56 @@ exports.category_create_post = [
 ];
 
 exports.category_delete_get = asyncHandler(async(req, res, next) => {
-  res.send('Not implemented: category delete GET');
+  const [category, allItemsUnderCategory] = await Promise.all([
+    Category.findById(req.params.id, 'name').exec(),
+    Item.find({category: req.params.id}, 'name').exec(),
+  ]);
+
+  if (category === null) {
+    res.redirect('/inventory/category');
+  } else {
+    res.render('category_delete', {
+      title: 'Delete Category', 
+      category: category, 
+      category_items: allItemsUnderCategory
+    });
+  }
 });
 
-exports.category_delete_post = asyncHandler(async(req, res, next) => {
-  res.send('Not implemented: category delete POST');
-});
+exports.category_delete_post = [
+  body('password', 'The admin password is incorrect.')
+    .equals(process.env.ADMIN_PASSWORD),
+  
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+
+    const [category, allItemsUnderCategory] = await Promise.all([
+      Category.findById(req.params.id, 'name').exec(),
+      Item.find({category: req.params.id}, 'name').exec(),  
+    ]);
+
+    if (allItemsUnderCategory.length > 0) {
+      res.render('category_delete', {
+        title: 'Delete Category',
+        category: category,
+        category_items: allItemsUnderCategory,
+      });
+      return;
+    }
+
+    if (!errors.isEmpty()) {
+      res.render('category_delete', {
+        title: 'Delete Category',
+        category: category,
+        category_items: allItemsUnderCategory,
+        errors: errors.array(),
+      });
+    } else {
+      await Category.findByIdAndDelete(req.body.category_id).exec();
+      res.redirect('/inventory/category');
+    }
+  }),
+];
 
 exports.category_update_get = asyncHandler(async(req, res, next) => {
   res.send('Not implemented: category update GET');

@@ -108,6 +108,7 @@ exports.item_delete_get = asyncHandler(async(req, res, next) => {
 
   if (item === null) {
     res.redirect('/inventory/items');
+    return;   
   }
 
   res.render('item_delete', {title: 'Delete item', item: item});
