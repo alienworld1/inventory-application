@@ -15,15 +15,32 @@ const app = express();
 const mongoDB = process.env.MONGODB_URL;
 mongoose.connect(mongoDB);
 
+const compression = require('compression');
+const helmet = require('helmet');
+const RateLimit = require('express-rate-limit');
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
+
+app.use(helmet.contentSecurityPolicy({
+  directives: {
+    'img-src': ["'self'", 'data:', 'https://res.cloudinary.com/']
+  },
+}));
+app.use(compression());
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+const limiter = RateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 20,
+});
+app.use(limiter);
 
 app.use('/', indexRouter);
 app.use('/inventory', inventoryRouter);
