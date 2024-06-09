@@ -6,9 +6,9 @@ block content
   form(method="post")
     section 
       label(for='name') Name:
-      input#name(type="text" placeholder='Fruits, Dairy Products etc.' name='name' required value=(category===undefined ? '' : category.name)) 
+      input#name(type="text" placeholder='Fruits, Dairy Products etc.' name='name' required value=(undefined===category ? '' : category.name)) 
       label(for='description') Description: 
-      input#description(type='text' name='description' required minlength=5 value=(category===undefined ? '' : category.description))
+      input#description(type='text' name='description' required minlength=5 value=(undefined===category ? '' : category.description))
     button(type="submit") Submit
 
   if errors
