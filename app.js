@@ -16,12 +16,15 @@ const mongoDB = process.env.MONGODB_URL;
 mongoose.connect(mongoDB);
 
 const compression = require('compression');
+const helmet = require('helmet');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 app.use(compression());
+app.use(helmet());
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
