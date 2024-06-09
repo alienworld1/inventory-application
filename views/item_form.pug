@@ -3,7 +3,7 @@ extends layout
 block content 
   h1= title
 
-  form(method="post")
+  form(method="post" enctype='multipart/form-data')
     section 
       label(for='name') Name:
       input#name(type="text" name='name' required value=(item===undefined ? '' : item.name)) 
@@ -26,6 +26,9 @@ block content
       input#price(name='price' type='number' required value=(item===undefined ? '' : item.price) min=0 step=0.01)
       label(for='number_in_stock') Number in stock:
       input#number_in_stock(type='number' name='number_in_stock' min=0 required value=(item===undefined ? '' : item.number_in_stock))
+    section 
+      label(for='photo') Photo: 
+      input#photo(name='photo' type='file')
     if isUpdate 
       section 
         label(for='password') Password:

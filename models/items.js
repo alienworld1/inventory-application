@@ -18,6 +18,9 @@ const ItemSchema = new mongoose.Schema({
     min: 0,
     default: 0, 
   },
+  image_url: {
+    type: String,
+  },
 });
 
 ItemSchema.virtual('url').get(function() {

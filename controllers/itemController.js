@@ -4,6 +4,8 @@ const dotenv = require('dotenv').config();
 
 const Item = require('../models/items');
 const Category = require('../models/categories');
+const upload = require('../helpers/multer');
+const uploadImage = require('../helpers/cloudinary');
 
 exports.index = asyncHandler(async(req, res, next) => {
   const [numItems, numCategories] = await Promise.all([
@@ -97,6 +99,10 @@ exports.item_create_post = [
       });
       return;
     } else {
+      if (req.file) {
+        const image = await uploadImage(req.file);
+        item.image_url = image.secure_url;
+      }
       await item.save();
       res.redirect(item.url);
     }
@@ -209,6 +215,10 @@ exports.item_update_post = [
       });
       return;
     } else {
+      if (req.file) {
+        const image = await uploadImage(req.file);
+        item.image_url = image.secure_url;
+      }
       const updatedItem = await Item.findByIdAndUpdate(req.params.id, item, {});
       res.redirect(updatedItem.url);
     }
