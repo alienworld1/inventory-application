@@ -1,7 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const dotenv = require('dotenv').config();
 const { body, validationResult } = require('express-validator');
-const debug = require('debug');
 
 const Category = require('../models/categories');
 const Item = require('../models/items');
@@ -131,11 +130,14 @@ exports.category_update_get = asyncHandler(async(req, res, next) => {
   res.render('category_form', {
     title: 'Update Category',
     category: category,
+    isUpdate: true,
   });
   
 });
 
 exports.category_update_post = [
+  body('password', 'Admin password is incorrect')
+    .equals(process.env.ADMIN_PASSWORD),
   body('name', 'Category name must be specified')
     .trim()
     .isLength({min: 1})
@@ -155,6 +157,7 @@ exports.category_update_post = [
         title: 'Create Category',
         category: category,
         errors: errors.array(),
+        isUpdate: true,
       });
       return;
     } else {

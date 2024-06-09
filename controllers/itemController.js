@@ -137,9 +137,80 @@ exports.item_delete_post = [
 ];
 
 exports.item_update_get = asyncHandler(async(req, res, next) => {
-  res.send('Not implemented: item update GET');
+  const [item, categories] = await Promise.all([
+    Item.findById(req.params.id).exec(),
+    Category.find({}, 'name').sort({name : 1}).exec(),
+  ]);
+
+  if (item === null) {
+    const err = new Error('Item not found');
+    err.status = 404;
+    return next(err);
+  }
+
+  res.render('item_form', {
+    title: 'Update Item',
+    item: item,
+    isUpdate: true,
+    categories: categories,
+  });
 });
 
-exports.item_update_post = asyncHandler(async(req, res, next) => {
-  res.send('Not implemented: item update POST');
-});
+exports.item_update_post = [
+  body('password', 'Admin password is incorrect')
+    .equals(process.env.ADMIN_PASSWORD),
+  body('name', 'Item name must be specified')
+    .trim()
+    .isLength({min: 1})
+    .escape(),
+  body('description', 'Description must contain at least 5 characters')
+    .trim()
+    .isLength({min: 5})
+    .escape(),
+  body('category', 'Category must be specified')
+    .trim()
+    .isLength({min: 1})
+    .escape(),
+  body('price')
+    .trim()
+    .isLength({min: 1})
+    .withMessage('Price must be specified')
+    .isFloat({gt: 0})
+    .withMessage('Price must be a positive value')
+    .toFloat(),
+  body('number_in_stock')
+    .trim()
+    .isLength({min: 1})
+    .withMessage('Number in stock must be specified')
+    .isInt({gt: 0})
+    .withMessage('Number in stock must be a positive integer')
+    .toInt(),
+  
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+
+    const item = new Item({
+      name: req.body.name,
+      description: req.body.description,
+      category: req.body.category,
+      price: req.body.price,
+      number_in_stock: req.body.number_in_stock,
+      _id: req.params.id
+    });
+
+    if (!errors.isEmpty()) {
+      const categories = await Category.find({}, 'name').sort({name: 1}).exec();
+      res.render('item_form', {
+        title: 'Create item',
+        categories: categories,
+        item: item,
+        errors: errors.array(),
+        isUpdate: true,
+      });
+      return;
+    } else {
+      const updatedItem = await Item.findByIdAndUpdate(req.params.id, item, {});
+      res.redirect(updatedItem.url);
+    }
+  }),
+];

@@ -23,9 +23,13 @@ block content
             option(value=category._id) #{category.name}
     section 
       label(for='price') Price: 
-      input#price(type="number" name='price' required min=0)
+      input#price(name='price' type='number' required value=(item===undefined ? '' : item.price) min=0 step=0.01)
       label(for='number_in_stock') Number in stock:
-      input#number_in_stock(type='number' name='number_in_stock' min=0 required)
+      input#number_in_stock(type='number' name='number_in_stock' min=0 required value=(item===undefined ? '' : item.number_in_stock))
+    if isUpdate 
+      section 
+        label(for='password') Password:
+        input#password(type='password' name='password' required)
     button(type="submit") Submit
 
   if errors
